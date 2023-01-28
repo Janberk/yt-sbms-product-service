@@ -15,8 +15,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import de.cdn.ytsbmsproductservice.dto.ProductRequest;
+import de.cdn.ytsbmsproductservice.repository.ProductRepository;
 
 @SpringBootTest
 @Testcontainers
@@ -27,6 +29,8 @@ class YtSbmsProductServiceApplicationTests {
     static MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.4.19-rc0-focal"));
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ProductRepository productRepository;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -44,6 +48,7 @@ class YtSbmsProductServiceApplicationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(productRequestString))
                 .andExpect(status().isCreated());
+        assertEquals(1, productRepository.findAll().size());
     }
 
     private ProductRequest getProductRequest() {
